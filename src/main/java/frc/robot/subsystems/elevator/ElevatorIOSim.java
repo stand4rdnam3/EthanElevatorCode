@@ -1,7 +1,5 @@
 package frc.robot.subsystems.elevator;
 
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -11,11 +9,6 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.Timer;
 
 public class ElevatorIOSim implements ElevatorIO {
-
-    private static final LoggedNetworkNumber kP = new LoggedNetworkNumber("/Tuning/kP", 0.0); 
-    private static final LoggedNetworkNumber kI = new LoggedNetworkNumber("/Tuning/kI", 0.0); 
-    private static final LoggedNetworkNumber kD = new LoggedNetworkNumber("/Tuning/kD", 0.0); 
-    private static final LoggedNetworkNumber kG = new LoggedNetworkNumber("/Tuning/kG", 0.0);
 
     private double appliedVolts = 0.0;
     private double directVolts = 0.0;
@@ -32,7 +25,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
     public ElevatorIOSim() {
         sim = new ElevatorSim(LinearSystemId.createElevatorSystem(DCMotor.getNEO(2), ElevatorConstants.momentOfInertia, ElevatorConstants.drumRadius, ElevatorConstants.gearing), ElevatorConstants.gearbox, ElevatorConstants.minHeight, ElevatorConstants.maxHeight, true, ElevatorConstants.minHeight);
-        pidController = new ProfiledPIDController(kP.getAsDouble(), kI.getAsDouble(), kD.getAsDouble(), new TrapezoidProfile.Constraints(ElevatorConstants.maxVelocity, ElevatorConstants.maxAcceleration));
+        pidController = new ProfiledPIDController(ElevatorConstants.kP, ElevatorConstants.kI, ElevatorConstants.kD, new TrapezoidProfile.Constraints(ElevatorConstants.maxVelocity, ElevatorConstants.maxAcceleration));
     }
 
     @Override
@@ -56,12 +49,12 @@ public class ElevatorIOSim implements ElevatorIO {
         inputs.leftSupplyCurrent = sim.getCurrentDrawAmps();
         inputs.rightSupplyCurrent = sim.getCurrentDrawAmps();
 
-        pidController.setPID(kP.getAsDouble(), kI.getAsDouble(), kD.getAsDouble());
+        pidController.setPID(ElevatorConstants.kP, ElevatorConstants.kI, ElevatorConstants.kD);
 
         if (isVoltageMode) {
             appliedVolts = MathUtil.clamp(directVolts, ElevatorConstants.minVoltage, ElevatorConstants.maxVoltage);
         } else {
-            appliedVolts = MathUtil.clamp(pidController.calculate(inputs.position, setpoint) + kG.getAsDouble(), ElevatorConstants.minVoltage, ElevatorConstants.maxVoltage);
+            appliedVolts = MathUtil.clamp(pidController.calculate(inputs.position, setpoint) + ElevatorConstants.kG, ElevatorConstants.minVoltage, ElevatorConstants.maxVoltage);
         }
 
         sim.setInputVoltage(appliedVolts);

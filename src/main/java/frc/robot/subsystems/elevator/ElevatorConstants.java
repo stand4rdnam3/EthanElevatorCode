@@ -13,15 +13,21 @@ public class ElevatorConstants {
     public static final DCMotor gearbox = DCMotor.getNEO(2);
     public static final double minVoltage = -12.0;
     public static final double maxVoltage = 12.0;
+    public static final double positionConversionFactor = drumRadius * 2 * Math.PI / gearing;
 
-    //public static final double kP = 6.0;
-    //public static final double kI = 0.0;
-    //public static final double kD = 0.001;
-    //public statis final double kG = 0.00633;
-
+    public static final double kP = 6.0;
+    public static final double kI = 0.0;
+    public static final double kD = 0.001;
+    public static final double kG = 0.00633;
+    public static final double kS = 0.0;
+    public static final double kA = 0.0;
+    public static final double kV = 0.0;
 
     public static int supplyCurrent = 80;
     public static int statorCurrent = 120;
     public static int supplyCurrentLow = 60;
-    
+
+    public static int elevatorLeftMotorID = 0;
+    public static int elevatorRightMotorID = 0;
+
 }

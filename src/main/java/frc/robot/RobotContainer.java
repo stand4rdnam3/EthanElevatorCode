@@ -19,14 +19,14 @@ public class RobotContainer {
     if (RobotBase.isSimulation()) {
       this.elevator = new Elevator(new ElevatorIOSim());
     } else {
-      //elevator = new Elevator(new frc.robot.subsystems.elevator.ElevatorIOSparkMax());
+      this.elevator = new Elevator(new frc.robot.subsystems.elevator.ElevatorIOSparkMax());
     }
     configureBindings();
   }
 
   private void configureBindings() {
     xbox.a().onTrue(elevator.setPosition(1.0));
-    xbox.b().onTrue(elevator.setVoltageCommand(6.0));
+    xbox.b().onTrue(elevator.setVoltageCommand(2.0));
     xbox.x().onTrue(elevator.setPosition(0.0));
   }
 
