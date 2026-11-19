@@ -4,8 +4,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -14,6 +14,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -40,7 +41,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
         config.idleMode(IdleMode.kCoast).inverted(false).voltageCompensation(12.0).smartCurrentLimit(95);
 
-        config.encoder.positionConversionFactor(ElevatorConstants.positionConversionFactor).velocityConversionFactor(ElevatorConstants.positionConversionFactor);
+        config.encoder.positionConversionFactor(ElevatorConstants.positionConversionFactor).velocityConversionFactor(ElevatorConstants.positionConversionFactor / 60.0);
 
         config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         config.closedLoop.pid(ElevatorConstants.kP, ElevatorConstants.kI, ElevatorConstants.kD);
@@ -64,9 +65,6 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
         currentTime = Timer.getFPGATimestamp();
         deltaTime = currentTime - previousTime;
-        inputs.acceleration = (inputs.velocity - previousVelocity) / deltaTime;
-        previousTime = currentTime;
-        previousVelocity = inputs.velocity;
 
         inputs.setpoint = this.setpoint;
 
@@ -83,8 +81,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 @Override
 public void setPosition(double height) {
     this.setpoint = MathUtil.clamp(height, ElevatorConstants.minHeight, ElevatorConstants.maxHeight);
-    controller.setReference(setpoint, ControlType.kPosition, ClosedLoopSlot.kSlot0, feedforward.calculate(0.0), ArbFFUnits.kVoltage);
-
+    controller.setSetpoint(setpoint, ControlType.kPosition, ClosedLoopSlot.kSlot0, feedforward.calculate(0.0), ArbFFUnits.kVoltage);
 }
 
 @Override
@@ -94,7 +91,8 @@ public void setVoltage(double voltage) {
 
 @Override
 public void stop() {
+    controller.setSetpoint(0.0, null);
+    this.setpoint = 0.0;
     leftMotor.setVoltage(0.0);
-    rightMotor.setVoltage(0.0);
 }
 }

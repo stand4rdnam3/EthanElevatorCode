@@ -20,14 +20,14 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command setVoltageCommand(double voltage) {
-        return Commands.run(() -> io.setVoltage(voltage), this);
+        return Commands.runOnce(() -> io.setVoltage(voltage), this);
     }
 
     public Command setPosition(double height) {
-        return Commands.run(() -> io.setPosition(height), this);
+        return Commands.runOnce(() -> io.setPosition(height), this);
     }
 
     public Command stopCommand() {
-        return Commands.run(() -> io.stop(), this);
+        return Commands.runOnce(() -> io.stop(), this);
     }
 }

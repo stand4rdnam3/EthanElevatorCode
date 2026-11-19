@@ -1,6 +1,12 @@
 package frc.robot.subsystems.elevator;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import org.littletonrobotics.junction.AutoLog;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public interface ElevatorIO {
     
@@ -24,19 +30,11 @@ public interface ElevatorIO {
         public double rightStatorCurrent = 0.0;
     }
 
-    public default void updateInputs(ElevatorInputs inputs) {
+    public default void updateInputs(ElevatorInputs inputs) {}
 
-    }
+    public default void setVoltage(double voltage) {}
 
-    public default void setVoltage(double voltage) {
+    public default void setPosition(double height) {}
 
-    }
-
-    public default void setPosition(double height) {
-
-    }
-
-    public default void stop() {
-
-    }
+    public default void stop() {}
 }
